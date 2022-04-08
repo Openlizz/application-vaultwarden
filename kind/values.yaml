@@ -6,12 +6,13 @@ metadata:
 spec:
   values:
     ingress:
-      hosts:
-        - host: vaultwarden.kind.cluster
-          paths:
-            - path: "/"
-              pathType: Prefix
-      tls:
-        - secretName: vaultwarden-cert
-          hosts:
-            - vaultwarden.kind.cluster
+      main:
+        hosts:
+          - host: vaultwarden.kind.cluster
+            paths:
+              - path: "/"
+                pathType: Prefix
+        tls:
+          - secretName: vaultwarden-cert
+            hosts:
+              - vaultwarden.kind.cluster
