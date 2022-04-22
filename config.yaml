@@ -8,6 +8,9 @@ values:
       repository: gitlab.com/openlizz/applications/cert-manager
       shaRange: HEAD
   clusterValues:
+    - name: domain
+      template: '{{ index .Env "DOMAIN" }}'
+      required: true
     - name: nginxName
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/nginx" }}{{.Name}}{{ end }}{{ end }}'
     - name: nginxNamespace
