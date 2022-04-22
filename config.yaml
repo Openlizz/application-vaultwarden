@@ -10,8 +10,12 @@ values:
   clusterValues:
     - name: nginxName
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/nginx" }}{{.Name}}{{ end }}{{ end }}'
+    - name: nginxNamespace
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/nginx" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: certManagerName
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Name}}{{ end }}{{ end }}'
+    - name: certManagerNamespace
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
   passwords:
     - name: token
       length: 16
@@ -24,9 +28,9 @@ dependencies:
   - {{ index . "isCertManagerInstalled" }}
 dependsOn:
   - name: {{ index . "nginxName" }}
-    namespace: {{ index . "nginxName" }}
+    namespace: {{ index . "nginxNamespace" }}
   - name: {{ index . "certManagerName" }}
-    namespace: {{ index . "certManagerName" }}
+    namespace: {{ index . "certManagerNamespace" }}
 encryption:
   enabled: true
   inputPaths:
