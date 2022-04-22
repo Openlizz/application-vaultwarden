@@ -2,9 +2,9 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: vaultwarden
-  namespace: { { index . "namespace" } }
+  namespace: {{ index . "namespace" }}
 spec:
-  serviceAccountName: { { index . "serviceAccountName" } }
+  serviceAccountName: {{ index . "serviceAccountName" }}
   releaseName: vaultwarden
   chart:
     spec:
