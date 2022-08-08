@@ -67,10 +67,11 @@ spec:
       {{- end}}
       {{- if index . "isSmtpServerInstalled" }}
       SMTP_HOST:
-          valueFrom:
-            secretKeyRef:
-              name: smtp-secret
-              key: host
+        valueFrom:
+          secretKeyRef:
+            name: smtp-secret
+            key: host
+      SMTP_FROM: noreply@vaultwarden.{{ index . "domain"}}
       MAIL_FROM_ADDRESS: noreply
       MAIL_DOMAIN:
         valueFrom:
@@ -137,6 +138,6 @@ spec:
                       lifecycle:
                         postStart:
                           exec:
-                            command: ["/bin/sh", "-c", "export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
+                            command: ["/bin/sh", "-c", "unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
           {{- end}}
   {{- end}}
