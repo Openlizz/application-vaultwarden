@@ -48,7 +48,7 @@ values:
     - name: token
       length: 64
       numDigits: 16
-      numSymbols: 16
+      numSymbols: 0
       noUpper: false
       allowRepeat: true
 dependsOn:
