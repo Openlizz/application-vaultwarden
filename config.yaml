@@ -50,7 +50,7 @@ values:
       numDigits: 16
       numSymbols: 16
       noUpper: false
-      allowRepeat: false
+      allowRepeat: true
 dependsOn:
   {{- if index . "isNginxInstalled" }}
   - name: {{index . "nginxName"}}
