@@ -3,10 +3,10 @@ values:
   applicationDependencies:
     - name: isNginxInstalled
       repository: gitlab.com/openlizz/applications/nginx
-      shaRange: HEAD
     - name: isCertManagerInstalled
       repository: gitlab.com/openlizz/applications/cert-manager
-      shaRange: HEAD
+    - name: isClusterIssuerInstalled
+      repository: gitlab.com/openlizz/applications/cluster-issuer
   clusterValues:
     - name: domain
       template: '{{ index .Env "DOMAIN" }}'
@@ -19,6 +19,10 @@ values:
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Name}}{{ end }}{{ end }}'
     - name: certManagerNamespace
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+    - name: clusterIssuerName
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+    - name: clusterIssuerNamespace
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
   passwords:
     - name: token
       length: 16
@@ -26,14 +30,19 @@ values:
       numSymbols: 0
       noUpper: false
       allowRepeat: false
-dependencies:
-  - {{ index . "isNginxInstalled" }}
-  - {{ index . "isCertManagerInstalled" }}
 dependsOn:
-  - name: {{ index . "nginxName" }}
-    namespace: {{ index . "nginxNamespace" }}
-  - name: {{ index . "certManagerName" }}
-    namespace: {{ index . "certManagerNamespace" }}
+  {{- if index . "isNginxInstalled" }}
+  - name: {{index . "nginxName"}}
+    namespace: {{index . "nginxNamespace"}}
+  {{- end }}
+  {{- if index . "isCertManagerInstalled" }}
+  - name: {{index . "certManagerName"}}
+    namespace: {{index . "certManagerNamespace"}}
+  {{- end }}
+  {{- if index . "isClusterIssuerInstalled" }}
+  - name: {{index . "clusterIssuerName"}}
+    namespace: {{index . "clusterIssuerNamespace"}}
+  {{- end }}
 encryption:
   enabled: true
   inputPaths:
