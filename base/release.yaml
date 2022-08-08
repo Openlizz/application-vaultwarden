@@ -52,6 +52,11 @@ spec:
           secretKeyRef:
             name: vaultwarden-admin-token
             key: token
+      {{- if and (index . "isNginxInstalled") (index . "isCertManagerInstalled") }}
+      DOMAIN: https://vaultwarden.{{ index . "domain"}}
+      {{- else }}
+      DOMAIN: http://vaultwarden.{{ index . "domain"}}
+      {{- end }}
       {{- if index . "isPostgresqlInstalled" }}
       DATABASE_URL: postgresql://postgres@{{ index . "postgresqlName"}}.{{ index . "postgresqlNamespace"}}.svc.cluster.local:5432/vaultwarden
       PGPASSWORD:
@@ -66,13 +71,22 @@ spec:
             secretKeyRef:
               name: smtp-secret
               key: host
-      SMTP_FROM: noreply@openlizz.com
+      MAIL_FROM_ADDRESS: noreply
+      MAIL_DOMAIN:
+        valueFrom:
+          secretKeyRef:
+            name: smtp-secret
+            key: domain
       SMTP_PORT:
         valueFrom:
           secretKeyRef:
             name: smtp-secret
             key: port
-      SMTP_SECURITY: starttls
+      SMTP_SECURE:
+        valueFrom:
+          secretKeyRef:
+            name: smtp-secret
+            key: secure
       SMTP_USERNAME:
         valueFrom:
           secretKeyRef:
@@ -84,10 +98,11 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
-  {{- if index . "isPostgresqlInstalled" }}
+  {{- if or (index . "isPostgresqlInstalled") (index . "isSmtpServerInstalled") }}
   postRenderers:
     - kustomize:
         patchesStrategicMerge:
+          {{- if index . "isPostgresqlInstalled" }}
           - kind: Deployment
             apiVersion: apps/v1
             metadata:
@@ -108,4 +123,19 @@ spec:
                               key: postgres-password
                         - name: SQL
                           value: "select 'create database vaultwarden' where not exists (select from pg_database where datname = 'vaultwarden')\\gexec"
+          {{- end}}
+          {{- if index . "isSmtpServerInstalled" }}
+          - kind: Deployment
+            apiVersion: apps/v1
+            metadata:
+              name: vaultwarden
+            spec:
+              template:
+                spec:
+                  containers:
+                    lifecycle:
+                      postStart:
+                        exec:
+                          command: ["/bin/sh", "-c", "export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
+          {{- end}}
   {{- end}}
