@@ -60,6 +60,30 @@ spec:
             name: postgresql-secret
             key: postgres-password
       {{- end}}
+      {{- if index . "isSmtpServerInstalled" }}
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: smtp-secret
+              key: host
+        - SMTP_FROM: noreply@openlizz.com
+        - name: SMTP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: smtp-secret
+              key: port
+        - SMTP_SECURITY: starttls
+        - name: SMTP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: smtp-secret
+              key: username
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: smtp-secret
+              key: password
+      {{- end }}
   {{- if index . "isPostgresqlInstalled" }}
   postRenderers:
     - kustomize:
