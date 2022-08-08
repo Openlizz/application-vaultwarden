@@ -46,6 +46,8 @@ values:
       repository: gitlab.com/openlizz/applications/smtp-server
   passwords:
     - name: token
+      description: "token to access the /admin page"
+      print: true
       length: 64
       numDigits: 16
       numSymbols: 0
