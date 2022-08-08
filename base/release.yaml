@@ -52,3 +52,36 @@ spec:
           secretKeyRef:
             name: vaultwarden-admin-token
             key: token
+      {{- if index . "isPostgresqlInstalled" }}
+      DATABASE_URL: postgresql://postgres@{{ index . "postgresqlName"}}.{{ index . "postgresqlNamespace"}}.svc.cluster.local:5432/vaultwarden
+      PGPASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: postgresql-secret
+            key: postgres-password
+      {{- end}}
+  {{- if index . "isPostgresqlInstalled" }}
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - kind: Deployment
+            apiVersion: apps/v1
+            metadata:
+              name: vaultwarden-initdb
+            spec:
+              template:
+                spec:
+                  initContainers:
+                    - name: "initdb"
+                      image: "docker.io/bitnami/postgresql:11.3.0"
+                      command: ["/bin/bash", "-c"]
+                      args: ['echo $SQL > /tmp/init.sql; psql -f /tmp/init.sql --host {{ index . "postgresqlName"}}.{{ index . "postgresqlNamespace"}} -U postgres']
+                      env:
+                        - name: PGPASSWORD
+                          valueFrom:
+                            secretKeyRef:
+                              name: postgresql-secret
+                              key: postgres-password
+                        - name: SQL
+                          value: "select 'create database vaultwarden' where not exists (select from pg_database where datname = 'vaultwarden')\\gexec"
+  {{- end}}

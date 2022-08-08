@@ -7,6 +7,10 @@ values:
       repository: gitlab.com/openlizz/applications/cert-manager
     - name: isClusterIssuerInstalled
       repository: gitlab.com/openlizz/applications/cluster-issuer
+    - name: isPostgresqlInstalled
+      repository: gitlab.com/openlizz/applications/postgresql
+    - name: isSmtpServerInstalled
+      repository: gitlab.com/openlizz/applications/smtp-server
   clusterValues:
     - name: domain
       template: '{{ index .Env "DOMAIN" }}'
@@ -23,11 +27,28 @@ values:
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: clusterIssuerNamespace
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+    - name: postgresqlName
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/postgresql" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+    - name: postgresqlNamespace
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/postgresql" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+    - name: smtpServerName
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+    - name: smtpServerNamespace
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+  applicationSecrets:
+    - destinationPath: base/postgres_secret.yaml
+      originPath: base/secret.yaml
+      kustomizationPath: base/kustomization.yaml
+      repository: gitlab.com/openlizz/applications/postgresql
+    - destinationPath: base/smtp_server_secret.yaml
+      originPath: base/secret.yaml
+      kustomizationPath: base/kustomization.yaml
+      repository: gitlab.com/openlizz/applications/smtp-server
   passwords:
     - name: token
-      length: 16
-      numDigits: 5
-      numSymbols: 0
+      length: 64
+      numDigits: 16
+      numSymbols: 16
       noUpper: false
       allowRepeat: false
 dependsOn:
