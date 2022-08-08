@@ -51,6 +51,27 @@ values:
       numSymbols: 16
       noUpper: false
       allowRepeat: true
+dependsOn:
+  {{- if index . "isNginxInstalled" }}
+  - name: {{index . "nginxName"}}
+    namespace: {{index . "nginxNamespace"}}
+  {{- end }}
+  {{- if index . "isCertManagerInstalled" }}
+  - name: {{index . "certManagerName"}}
+    namespace: {{index . "certManagerNamespace"}}
+  {{- end }}
+  {{- if index . "isClusterIssuerInstalled" }}
+  - name: {{index . "clusterIssuerName"}}
+    namespace: {{index . "clusterIssuerNamespace"}}
+  {{- end }}
+  {{- if index . "isPostgresqlInstalled" }}
+  - name: {{index . "postgresqlName"}}
+    namespace: {{index . "postgresqlNamespace"}}
+  {{- end }}
+  {{- if index . "isSmtpServerInstalled" }}
+  - name: {{index . "smtpServerName"}}
+    namespace: {{index . "smtpServerNamespace"}}
+  {{- end }}
 encryption:
   enabled: true
   inputPaths:
