@@ -71,13 +71,13 @@ spec:
           secretKeyRef:
             name: smtp-secret
             key: host
-      SMTP_FROM: noreply@vaultwarden.{{ index . "domain"}}
       MAIL_FROM_ADDRESS: noreply
       MAIL_DOMAIN:
         valueFrom:
           secretKeyRef:
             name: smtp-secret
             key: domain
+      SMTP_FROM: $(MAIL_FROM_ADDRESS)@$(MAIL_DOMAIN)
       SMTP_PORT:
         valueFrom:
           secretKeyRef:
@@ -88,6 +88,7 @@ spec:
           secretKeyRef:
             name: smtp-secret
             key: secure
+      SMTP_SECURITY: force_tls
       SMTP_USERNAME:
         valueFrom:
           secretKeyRef:
@@ -99,15 +100,10 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
-    {{- if index . "isSmtpServerInstalled" }}
-    command: ["/bin/sh","-c"]
-    args: ["echo Hello from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN > /usr/share/message && unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && echo Hello 2 from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN >> /usr/share/message && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi && /start.sh"]
-    {{- end }}
-  {{- if or (index . "isPostgresqlInstalled") (index . "isSmtpServerInstalled") }}
+  {{- if index . "isPostgresqlInstalled" }}
   postRenderers:
     - kustomize:
         patchesStrategicMerge:
-          {{- if index . "isPostgresqlInstalled" }}
           - kind: Deployment
             apiVersion: apps/v1
             metadata:
@@ -128,5 +124,4 @@ spec:
                               key: postgres-password
                         - name: SQL
                           value: "select 'create database vaultwarden' where not exists (select from pg_database where datname = 'vaultwarden')\\gexec"
-          {{- end}}
   {{- end}}
