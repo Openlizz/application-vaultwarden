@@ -138,6 +138,6 @@ spec:
                       lifecycle:
                         postStart:
                           exec:
-                            command: ["/bin/sh", "-c", "unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
+                            command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message && unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
           {{- end}}
   {{- end}}
