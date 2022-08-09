@@ -95,6 +95,10 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
+    lifecycle:
+      postStart:
+        exec:
+          command: ["/bin/sh", "-c", "date > /container-started.txt"]
   {{- if index . "isPostgresqlInstalled" }}
   postRenderers:
     - kustomize:
