@@ -99,6 +99,10 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
+    {{- if index . "isSmtpServerInstalled" }}
+    command: ["/bin/sh","-c"]
+    args: ["echo Hello from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN > /usr/share/message && unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && echo Hello 2 from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN >> /usr/share/message && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi && /start.sh"]
+    {{- end }}
   {{- if or (index . "isPostgresqlInstalled") (index . "isSmtpServerInstalled") }}
   postRenderers:
     - kustomize:
@@ -124,20 +128,5 @@ spec:
                               key: postgres-password
                         - name: SQL
                           value: "select 'create database vaultwarden' where not exists (select from pg_database where datname = 'vaultwarden')\\gexec"
-          {{- end}}
-          {{- if index . "isSmtpServerInstalled" }}
-          - kind: Deployment
-            apiVersion: apps/v1
-            metadata:
-              name: vaultwarden
-            spec:
-              template:
-                spec:
-                  containers:
-                    - name: vaultwarden
-                      lifecycle:
-                        postStart:
-                          exec:
-                            command: ["/bin/sh", "-c", "echo Hello from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN > /usr/share/message && unset SMTP_FROM && export SMTP_FROM=$MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN && echo Hello 2 from $SMTP_FROM the postStart handler $MAIL_FROM_ADDRESS'@'$MAIL_DOMAIN > /usr/share/message && if [[ $SMTP_SECURE == 'ssl' ]] ; then export SMTP_SECURITY='force_tls'; else echo 'SMTP_SECURITY not configured via env variable'; fi"]
           {{- end}}
   {{- end}}
