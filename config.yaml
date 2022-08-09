@@ -35,6 +35,11 @@ values:
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: smtpServerNamespace
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+  applicationValues:
+    - name: smtpSecure
+      repository: gitlab.com/openlizz/applications/smtp-server
+      path: base/configmap.yaml
+      keys: ["data", "secure"]  
   applicationSecrets:
     - destinationPath: base/postgres_secret.yaml
       originPath: base/secret.yaml
