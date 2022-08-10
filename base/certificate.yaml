@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vaultwarden-cert
+  namespace: {{index . "namespace"}}
+spec:
+  dnsNames:
+    - vaultwarden.{{ index . "domain"}}
+  secretName: vaultwarden-cert
+  issuerRef:
+    name: cluster-issuer
+    kind: ClusterIssuer
