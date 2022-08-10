@@ -46,6 +46,7 @@ spec:
         type: emptyDir
     env:
       DATA_FOLDER: "/data"
+      LOG_FILE: "/data/vaultwarden.log"
       SIGNUPS_ALLOWED: false
       ADMIN_TOKEN:
         valueFrom:
@@ -95,10 +96,6 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
-    lifecycle:
-      postStart:
-        exec:
-          command: ["/bin/sh", "-c", "date > /container-started.txt"]
   {{- if index . "isPostgresqlInstalled" }}
   postRenderers:
     - kustomize:
