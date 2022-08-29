@@ -42,7 +42,7 @@ values:
     - name: domain
       repository: gitlab.com/openlizz/applications/domain-name
       path: configmap.yaml
-      keys: ["stringData", "value"]
+      keys: ["data", "value"]
     - name: smtpSecure
       repository: gitlab.com/openlizz/applications/smtp-server
       path: base/configmap.yaml
