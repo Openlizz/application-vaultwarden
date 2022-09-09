@@ -22,7 +22,7 @@ spec:
   values:
     ingress:
       main:
-        {{- if index . "isNginxInstalled" }}
+        {{- if and (index . "isNginxInstalled") (index . "isDomainInstalled") }}
         enabled: true
         annotations:
           kubernetes.io/ingress.class: nginx
@@ -34,7 +34,7 @@ spec:
         {{- else }}
         enable: false
         {{- end }}
-        {{- if and (index . "isNginxInstalled") (index . "isCertManagerInstalled") }}
+        {{- if and (index . "isNginxInstalled") (index . "isDomainInstalled") (index . "isCertManagerInstalled") }}
         tls:
           - secretName: vaultwarden-cert
             hosts:
@@ -53,9 +53,9 @@ spec:
           secretKeyRef:
             name: vaultwarden-admin-token
             key: token
-      {{- if and (index . "isNginxInstalled") (index . "isCertManagerInstalled") }}
+      {{- if and (index . "isNginxInstalled") (index . "isDomainInstalled") (index . "isCertManagerInstalled") }}
       DOMAIN: https://vaultwarden.{{ index . "domain"}}
-      {{- else }}
+      {{- else if (index . "isDomainInstalled") }}
       DOMAIN: http://vaultwarden.{{ index . "domain"}}
       {{- end }}
       {{- if index . "isPostgresqlInstalled" }}
