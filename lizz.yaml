@@ -2,60 +2,60 @@ name: vaultwarden
 values:
   applicationDependencies:
     - name: isNginxInstalled
-      repository: gitlab.com/openlizz/applications/nginx
+      repository: github.com/openlizz/application-nginx
     - name: isCertManagerInstalled
-      repository: gitlab.com/openlizz/applications/cert-manager
+      repository: github.com/openlizz/application-cert-manager
     - name: isClusterIssuerInstalled
-      repository: gitlab.com/openlizz/applications/cluster-issuer
+      repository: github.com/openlizz/application-cluster-issuer
     - name: isPostgresqlInstalled
-      repository: gitlab.com/openlizz/applications/postgresql
+      repository: github.com/openlizz/application-postgresql
     - name: isSmtpServerInstalled
-      repository: gitlab.com/openlizz/applications/smtp-server
+      repository: github.com/openlizz/application-smtp-server
     - name: isDomainInstalled
-      repository: gitlab.com/openlizz/applications/domain-name
+      repository: github.com/openlizz/application-domain-name
   clusterValues:
     - name: nginxName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/nginx" }}{{.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-nginx" }}{{.Name}}{{ end }}{{ end }}'
     - name: nginxNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/nginx" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-nginx" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: certManagerName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cert-manager" }}{{.Name}}{{ end }}{{ end }}'
     - name: certManagerNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cert-manager" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cert-manager" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: clusterIssuerName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cluster-issuer" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: clusterIssuerNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/cluster-issuer" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cluster-issuer" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: postgresqlName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/postgresql" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-postgresql" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: postgresqlNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/postgresql" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-postgresql" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: smtpServerName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-smtp-server" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: smtpServerNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/smtp-server" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-smtp-server" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: domainName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/domain-name" }}{{.Configuration.Name}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-domain-name" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: domainNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "gitlab.com/openlizz/applications/domain-name" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
+      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-domain-name" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
   applicationValues:
     - name: domain
-      repository: gitlab.com/openlizz/applications/domain-name
+      repository: github.com/openlizz/application-domain-name
       path: configmap.yaml
       keys: ["data", "value"]
     - name: smtpSecure
-      repository: gitlab.com/openlizz/applications/smtp-server
+      repository: github.com/openlizz/application-smtp-server
       path: base/configmap.yaml
       keys: ["data", "secure"]  
   applicationSecrets:
     - destinationPath: base/postgres_secret.yaml
       originPath: base/secret.yaml
       kustomizationPath: base/kustomization.yaml
-      repository: gitlab.com/openlizz/applications/postgresql
+      repository: github.com/openlizz/application-postgresql
     - destinationPath: base/smtp_server_secret.yaml
       originPath: base/secret.yaml
       kustomizationPath: base/kustomization.yaml
-      repository: gitlab.com/openlizz/applications/smtp-server
+      repository: github.com/openlizz/application-smtp-server
   passwords:
     - name: token
       description: "token to access the /admin page"
