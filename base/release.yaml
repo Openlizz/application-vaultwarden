@@ -8,11 +8,11 @@ spec:
   releaseName: vaultwarden
   chart:
     spec:
-      chart: vaultwarden
-      version: "5.3.2"
+      chart: app-template
+      version: "0.2.1"
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home
+        name: bjw-s-helm-charts
   interval: 30m
   install:
     remediation:
@@ -20,6 +20,12 @@ spec:
   test:
     enable: false
   values:
+    image:
+      repository: vaultwarden/server
+      pullPolicy: IfNotPresent
+      tag: 1.25.2
+    strategy:
+      type: Recreate
     ingress:
       main:
         {{- if and (index . "isNginxInstalled") (index . "isDomainInstalled") }}
@@ -43,7 +49,10 @@ spec:
     persistence:
       config:
         enabled: true
-        type: emptyDir
+        type: pvc
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        mountPath: /data
     env:
       DATA_FOLDER: "/data"
       LOG_FILE: "/data/vaultwarden.log"
@@ -58,14 +67,6 @@ spec:
       {{- else if (index . "isDomainInstalled") }}
       DOMAIN: http://vaultwarden.{{ index . "domain"}}
       {{- end }}
-      {{- if index . "isPostgresqlInstalled" }}
-      DATABASE_URL: postgresql://postgres@{{ index . "postgresqlName"}}.{{ index . "postgresqlNamespace"}}.svc.cluster.local:5432/vaultwarden
-      PGPASSWORD:
-        valueFrom:
-          secretKeyRef:
-            name: postgresql-secret
-            key: postgres-password
-      {{- end}}
       {{- if index . "isSmtpServerInstalled" }}
       SMTP_HOST:
         valueFrom:
@@ -96,28 +97,3 @@ spec:
             name: smtp-secret
             key: password
       {{- end }}
-  {{- if index . "isPostgresqlInstalled" }}
-  postRenderers:
-    - kustomize:
-        patchesStrategicMerge:
-          - kind: Deployment
-            apiVersion: apps/v1
-            metadata:
-              name: vaultwarden
-            spec:
-              template:
-                spec:
-                  initContainers:
-                    - name: "initdb"
-                      image: "docker.io/bitnami/postgresql:11.3.0"
-                      command: ["/bin/bash", "-c"]
-                      args: ['echo $SQL > /tmp/init.sql; psql -f /tmp/init.sql --host {{ index . "postgresqlName"}}.{{ index . "postgresqlNamespace"}} -U postgres']
-                      env:
-                        - name: PGPASSWORD
-                          valueFrom:
-                            secretKeyRef:
-                              name: postgresql-secret
-                              key: postgres-password
-                        - name: SQL
-                          value: "select 'create database vaultwarden' where not exists (select from pg_database where datname = 'vaultwarden')\\gexec"
-  {{- end}}

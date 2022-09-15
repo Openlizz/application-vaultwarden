@@ -7,8 +7,6 @@ values:
       repository: github.com/openlizz/application-cert-manager
     - name: isClusterIssuerInstalled
       repository: github.com/openlizz/application-cluster-issuer
-    - name: isPostgresqlInstalled
-      repository: github.com/openlizz/application-postgresql
     - name: isSmtpServerInstalled
       repository: github.com/openlizz/application-smtp-server
     - name: isDomainInstalled
@@ -26,10 +24,6 @@ values:
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cluster-issuer" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: clusterIssuerNamespace
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-cluster-issuer" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
-    - name: postgresqlName
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-postgresql" }}{{.Configuration.Name}}{{ end }}{{ end }}'
-    - name: postgresqlNamespace
-      template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-postgresql" }}{{.Configuration.Namespace}}{{ end }}{{ end }}'
     - name: smtpServerName
       template: '{{ range .Applications }}{{ if eq .Configuration.Repository "github.com/openlizz/application-smtp-server" }}{{.Configuration.Name}}{{ end }}{{ end }}'
     - name: smtpServerNamespace
@@ -48,10 +42,6 @@ values:
       path: base/configmap.yaml
       keys: ["data", "secure"]  
   applicationSecrets:
-    - destinationPath: base/postgres_secret.yaml
-      originPath: base/secret.yaml
-      kustomizationPath: base/kustomization.yaml
-      repository: github.com/openlizz/application-postgresql
     - destinationPath: base/smtp_server_secret.yaml
       originPath: base/secret.yaml
       kustomizationPath: base/kustomization.yaml
@@ -77,10 +67,6 @@ dependsOn:
   {{- if index . "isClusterIssuerInstalled" }}
   - name: {{index . "clusterIssuerName"}}
     namespace: {{index . "clusterIssuerNamespace"}}
-  {{- end }}
-  {{- if index . "isPostgresqlInstalled" }}
-  - name: {{index . "postgresqlName"}}
-    namespace: {{index . "postgresqlNamespace"}}
   {{- end }}
   {{- if index . "isSmtpServerInstalled" }}
   - name: {{index . "smtpServerName"}}
