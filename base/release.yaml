@@ -26,6 +26,14 @@ spec:
       tag: 1.25.2
     strategy:
       type: Recreate
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+          websocket:
+            enabled: true
+            port: 3012
     ingress:
       main:
         {{- if and (index . "isNginxInstalled") (index . "isDomainInstalled") }}
@@ -37,6 +45,14 @@ spec:
             paths:
               - path: "/"
                 pathType: Prefix
+              - path: /notifications/hub/negotiate
+                pathType: Prefix
+                service:
+                  port: http
+              - path: /notifications/hub
+                pathType: Prefix
+                service:
+                  port: websocket
         {{- else }}
         enable: false
         {{- end }}
