@@ -42,8 +42,6 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
-                service:
-                  port: http
         {{- else }}
         enable: false
         {{- end }}
