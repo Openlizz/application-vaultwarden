@@ -43,8 +43,10 @@ spec:
         hosts:
           - host: vaultwarden.{{ index . "domain"}}
             paths:
-              - path: "/"
+              - path: /
                 pathType: Prefix
+                service:
+                  port: http
               - path: /notifications/hub/negotiate
                 pathType: Prefix
                 service:
