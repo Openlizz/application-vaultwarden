@@ -8,11 +8,11 @@ spec:
   releaseName: vaultwarden
   chart:
     spec:
-      chart: vaultwarden
-      version: "5.3.2"
+      chart: app-template
+      version: "0.2.1"
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home
+        name: bjw-s-helm-charts
   interval: 30m
   install:
     remediation:
@@ -65,7 +65,10 @@ spec:
     persistence:
       config:
         enabled: true
-        type: emptyDir
+        type: pvc
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        mountPath: /data
     env:
       DATA_FOLDER: "/data"
       LOG_FILE: "/data/vaultwarden.log"
